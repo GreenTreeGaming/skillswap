@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import {
   ArrowRight,
   Search,
@@ -262,6 +263,7 @@ type SessionListing = {
 };
 
 export default function ExplorePage() {
+  const { data: session } = useSession();
   const [tab, setTab] = useState<Tab>('skills');
   const [query, setQuery] = useState('');
   const [picked, setPicked] = useState<SkillCategory | 'all'>('all');
@@ -417,8 +419,11 @@ export default function ExplorePage() {
             </p>
 
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <StickerButton href="/signup" tone="pink">
-                Make a profile
+              <StickerButton 
+                href={session ? "/profile" : "/signup"} 
+                tone="pink"
+              >
+                {session ? "Edit profile" : "Make a profile"}
               </StickerButton>
               <StickerButton href="/sessions" tone="blue">
                 View sessions

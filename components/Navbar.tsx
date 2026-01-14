@@ -274,7 +274,7 @@ export default function Navbar() {
               <div className="relative">
                 <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border-2 border-black/80 bg-white shadow-[0_10px_0_rgba(0,0,0,0.12)] transition group-hover:-rotate-3">
                   <Image
-                    src="/logo.png"
+                    src="/skillSmartLogo.png"
                     alt="SkillSwap logo"
                     width={44}
                     height={44}
@@ -282,13 +282,12 @@ export default function Navbar() {
                     priority
                   />
                 </div>
-                <div className="pointer-events-none absolute -right-2 -top-2 h-4 w-4 rounded-full border-2 border-black/70 bg-pink-200" />
               </div>
 
               <div className="leading-tight">
                 <div className="text-base font-black tracking-tight">SkillSwap</div>
                 <div className="text-[11px] font-semibold text-black/60">
-                  student talent exchange
+                  Student Talent Exchange
                 </div>
               </div>
             </Link>

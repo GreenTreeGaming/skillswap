@@ -529,7 +529,7 @@ export default function Home() {
           </div>
 
           <footer className="mt-10 text-center text-xs font-semibold text-black/55">
-            © {new Date().getFullYear()} SkillSwap • student talent exchange platform
+            © {new Date().getFullYear()} SkillSwap • Student Talent Exchange Platform
           </footer>
         </section>
       </div>

@@ -129,10 +129,7 @@ export default function ProfilePage() {
       {/* skills */}
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         {/* Can teach */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <div
           className="rounded-[28px] border-2 border-black/70 bg-white p-5 shadow-[0_18px_0_rgba(0,0,0,0.10)]"
           style={{ transform: 'rotate(-0.6deg)' }}
         >
@@ -150,13 +147,10 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Wants help */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <div
           className="rounded-[28px] border-2 border-black/70 bg-white p-5 shadow-[0_18px_0_rgba(0,0,0,0.10)]"
           style={{ transform: 'rotate(0.6deg)' }}
         >
@@ -174,7 +168,7 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
     </main>
   );

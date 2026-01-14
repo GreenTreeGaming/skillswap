@@ -9,6 +9,7 @@ export interface User {
   name: string;
   email: string;
   image?: string;
+  role?: 'skillswapper' | 'admin'; // Default: skillswapper
 
   // Skills
   canTeach: string[];
