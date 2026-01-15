@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -109,19 +109,18 @@ function Pill({
 
 type ChatMessage = {
   _id?: string;
-  from?: string; // email
-  to?: string; // email
+  from?: string;
+  to?: string;
   skill?: string;
   text: string;
   createdAt: string;
-
-  // local-only fields
   _localId?: string;
   _pending?: boolean;
   _failed?: boolean;
 };
 
-export default function MessagesPage() {
+// Extract the logic into a separate component that uses useSearchParams
+function MessagesContent() {
   const params = useSearchParams();
   const to = params.get('to');
   const skill = params.get('skill');
@@ -191,10 +190,8 @@ export default function MessagesPage() {
         createdAt: m.createdAt ?? new Date().toISOString(),
       }));
 
-      // keep local pending/failed messages that aren’t in server list yet
       const localOnly = messages.filter((m) => m._pending || m._failed);
 
-      // de-dupe by signature
       const seen = new Set<string>();
       const merged: ChatMessage[] = [];
 
@@ -285,7 +282,6 @@ export default function MessagesPage() {
 
     const localId = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 
-    // ✅ IMPORTANT: optimistic message uses REAL myEmail, not "me"
     const optimistic: ChatMessage = {
       _localId: localId,
       from: myEmail || 'me',
@@ -354,7 +350,6 @@ export default function MessagesPage() {
       <div className="relative mx-auto flex h-full max-w-4xl flex-col px-4 pb-4 pt-4 md:px-6">
         <Tape className="right-6 top-5 rotate-[6deg] hidden md:block" label="keep it short & clear" />
 
-        {/* Header */}
         <div className="sticky top-3 z-20">
           <div className="rounded-[28px] border-2 border-black/70 bg-white shadow-[0_16px_0_rgba(0,0,0,0.10)]">
             <div className="flex items-center justify-between gap-3 px-4 py-4 md:px-5">
@@ -442,7 +437,6 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        {/* Error */}
         <AnimatePresence>
           {error ? (
             <motion.div
@@ -456,7 +450,6 @@ export default function MessagesPage() {
           ) : null}
         </AnimatePresence>
 
-        {/* Chat */}
         <div className="mt-4 flex min-h-0 flex-1 flex-col">
           <div
             ref={listRef}
@@ -476,7 +469,7 @@ export default function MessagesPage() {
                   </div>
                   <div className="mt-4 text-xl font-black">No messages yet</div>
                   <div className="mt-2 text-sm font-semibold text-black/70">
-                    Send a quick message to kick things off. Mention your goal + what you’re stuck on.
+                    Send a quick message to kick things off. Mention your goal + what you're stuck on.
                   </div>
                 </div>
               ) : (
@@ -491,7 +484,6 @@ export default function MessagesPage() {
 
                       <div className="space-y-3">
                         {g.items.map((m, idx) => {
-                          // ✅ FIX: compare message.from to real session email
                           const mine =
                             (m.from ?? '').toLowerCase() &&
                             myEmail &&
@@ -551,7 +543,6 @@ export default function MessagesPage() {
             </div>
           </div>
 
-          {/* Composer */}
           <form
             onSubmit={sendMessage}
             className="mt-4 rounded-[26px] border-2 border-black/70 bg-white p-3 shadow-[0_14px_0_rgba(0,0,0,0.10)]"
@@ -613,5 +604,18 @@ export default function MessagesPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+// Main export wraps with Suspense
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={
+      <div className="grid h-screen place-items-center">
+        <div className="text-sm font-semibold text-black/60">Loading...</div>
+      </div>
+    }>
+      <MessagesContent />
+    </Suspense>
   );
 }
