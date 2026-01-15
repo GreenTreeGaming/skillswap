@@ -42,10 +42,10 @@ function StickerButton({
     tone === 'black'
       ? 'bg-black text-white'
       : tone === 'blue'
-      ? 'bg-sky-600 text-white'
-      : tone === 'green'
-      ? 'bg-emerald-600 text-white'
-      : 'bg-pink-600 text-white';
+        ? 'bg-sky-600 text-white'
+        : tone === 'green'
+          ? 'bg-emerald-600 text-white'
+          : 'bg-pink-600 text-white';
 
   return (
     <Link
@@ -490,6 +490,58 @@ export default function page() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </section>
+
+        {/* PROJECT INFO / CREDITS */}
+        <section className="mt-16 md:mt-20">
+          <div className="relative overflow-hidden rounded-[34px] border-2 border-black/70 bg-white p-8 shadow-[0_22px_0_rgba(0,0,0,0.10)] md:p-10">
+            {/* background texture */}
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-200/50 via-white to-yellow-200/50" />
+            <div className="absolute inset-0 opacity-[0.12] [background-image:radial-gradient(rgba(0,0,0,0.9)_1px,transparent_1px)] [background-size:18px_18px]" />
+
+            <div className="relative grid gap-6 md:grid-cols-12">
+              {/* Left */}
+              <div className="md:col-span-7">
+                <h3 className="text-2xl font-black tracking-tight md:text-3xl">
+                  About this project
+                </h3>
+                <p className="mt-3 text-sm font-semibold text-black/75 md:text-base">
+                  SkillSwap is a student-built platform designed to help students teach,
+                  learn, and support one another through real skills and real connections.
+                </p>
+
+                <div className="mt-5 space-y-2 text-sm font-semibold text-black/70">
+                  <div>
+                    <span className="font-black text-black/80">Theme:</span>{' '}
+                    SkillSwap: Student Talent Exchange Platform
+                  </div>
+                  <div>
+                    <span className="font-black text-black/80">Year:</span> 2026
+                  </div>
+                </div>
+              </div>
+
+              {/* Right */}
+              <div className="md:col-span-5">
+                <div className="rounded-3xl border-2 border-black/70 bg-white p-5 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
+                  <div className="text-sm font-black">Built by</div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm font-semibold">
+                    <div>Sarvajith Karun</div>
+                    <div>Shubham Panchal</div>
+                    <div>Aaron Zou</div>
+                    <div>Jasper Fang</div>
+                  </div>
+
+                  <div className="mt-4 border-t border-black/20 pt-3 text-xs font-semibold text-black/65">
+                    Wayzata Chapter<br />
+                    Wayzata High School<br />
+                    Plymouth, Minnesota
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
