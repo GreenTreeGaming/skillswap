@@ -20,6 +20,12 @@ interface UserDoc {
   wantsHelpWith: string[];
 }
 
+interface Skill {
+  slug: string;
+  label: string;
+  category?: string;
+}
+
 function SkillPill({ label }: { label: string }) {
   return (
     <div className="rounded-full border-2 border-black/70 bg-white px-3 py-1.5 text-xs font-extrabold shadow-[0_6px_0_rgba(0,0,0,0.10)]">
@@ -28,10 +34,16 @@ function SkillPill({ label }: { label: string }) {
   );
 }
 
+function getSkillLabel(slug: string, skillsList: Skill[]): string {
+  const skill = skillsList.find((s) => s.slug === slug);
+  return skill?.label || slug;
+}
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [user, setUser] = useState<UserDoc | null>(null);
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 🔒 auth guard
@@ -41,16 +53,26 @@ export default function ProfilePage() {
     }
   }, [status, router]);
 
-  // fetch user doc
+  // fetch user doc and skills
   useEffect(() => {
     if (!session?.user?.email) return;
 
     async function load() {
-      const res = await fetch('/api/profile');
-      if (res.ok) {
-        const data = await res.json();
+      const [userRes, skillsRes] = await Promise.all([
+        fetch('/api/profile'),
+        fetch('/api/skills'),
+      ]);
+
+      if (userRes.ok) {
+        const data = await userRes.json();
         setUser(data);
       }
+
+      if (skillsRes.ok) {
+        const skillsData = await skillsRes.json();
+        setSkills(skillsData.skills || []);
+      }
+
       setLoading(false);
     }
 
@@ -143,7 +165,9 @@ export default function ProfilePage() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {user.canTeach.length ? (
-              user.canTeach.map((s) => <SkillPill key={s} label={s} />)
+              user.canTeach.map((slug) => (
+                <SkillPill key={slug} label={getSkillLabel(slug, skills)} />
+              ))
             ) : (
               <div className="text-xs font-semibold text-black/60">
                 You haven’t added any yet.
@@ -167,7 +191,9 @@ export default function ProfilePage() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {user.wantsHelpWith.length ? (
-              user.wantsHelpWith.map((s) => <SkillPill key={s} label={s} />)
+              user.wantsHelpWith.map((slug) => (
+                <SkillPill key={slug} label={getSkillLabel(slug, skills)} />
+              ))
             ) : (
               <div className="text-xs font-semibold text-black/60">
                 Nothing listed yet.

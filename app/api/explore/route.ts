@@ -12,10 +12,7 @@ export async function GET() {
     // ---- BUILD SKILLS TAB ----
     const skillResults = skills.map((skill) => {
         const helpers = users.filter((u) =>
-            u.canTeach?.some(
-                (label: string) =>
-                    label.toLowerCase() === skill.label.toLowerCase()
-            )
+            u.canTeach?.includes(skill.slug)
         );
 
         const openSessions = sessions.filter(
@@ -29,8 +26,11 @@ export async function GET() {
             helpers: helpers.map((u) => ({
                 name: u.name,
                 email: u.email,
+                image: u.image,
                 canTeach: u.canTeach,
                 wantsHelpWith: u.wantsHelpWith ?? [],
+                ratingAvg: u.ratingAvg ?? null,
+                ratingCount: u.ratingCount ?? 0,
             })),
             openSessions,
         };

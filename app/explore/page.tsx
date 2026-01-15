@@ -25,7 +25,7 @@ import {
   Gamepad2,
 } from 'lucide-react';
 
-type Tab = 'skills' | 'people' | 'sessions';
+type Tab = 'skills' | 'people';
 type SkillCategory =
   | 'coding'
   | 'math'
@@ -237,15 +237,24 @@ type SkillListing = {
   level: 'beginner' | 'intermediate' | 'advanced';
   blurb: string;
   tags: string[];
+  helperEmail: string;
+
+  // ✅ add these
+  skillSlug: string;
+  skillLabel: string;
 };
 
 type PersonListing = {
   id: string;
   name: string;
   grade: string;
-  rating: number;
+  rating: number | null;
+  ratingCount: number;
+  image?: string | null;
   offers: SkillCategory[];
   seeks: SkillCategory[];
+  offerSkills: { slug: string; label: string }[];
+  seekSkills: { slug: string; label: string }[];
   vibe: string;
   locationHint: string;
 };
@@ -271,7 +280,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [skills, setSkills] = useState<SkillListing[]>([]);
   const [people, setPeople] = useState<PersonListing[]>([]);
-  const [sessions, setSessions] = useState<SessionListing[]>([]);
+  const [skillLabelsMap, setSkillLabelsMap] = useState<Map<string, string>>(new Map());
 
   // ✅ MOVE THIS UP
   const allCats = useMemo(
@@ -289,12 +298,15 @@ export default function ExplorePage() {
       const peopleMap = new Map<string, PersonListing>();
       const sessionListings: SessionListing[] = [];
 
-      const categoryByLabel = new Map<string, SkillCategory>();
+      const categoryBySlug = new Map<string, SkillCategory>();
+      const labelBySlug = new Map<string, string>();
 
       data.skills.forEach((s: any) => {
-        categoryByLabel.set(s.label.toLowerCase(), s.category);
+        categoryBySlug.set(s.slug, s.category);
+        labelBySlug.set(s.slug, s.label);
       });
 
+      setSkillLabelsMap(labelBySlug);
 
       data.skills.forEach((skill: any) => {
         skill.helpers.forEach((u: any) => {
@@ -306,45 +318,52 @@ export default function ExplorePage() {
             level: 'intermediate',
             blurb: `${u.name} can help with ${skill.label}.`,
             tags: [skill.label],
+            helperEmail: u.email,
+
+            skillSlug: skill.slug,
+            skillLabel: skill.label,
           });
 
           if (!peopleMap.has(u.email)) {
+            const offerSlugs = u.canTeach ?? [];
+            const seekSlugs = u.wantsHelpWith ?? [];
+
             peopleMap.set(u.email, {
               id: u.email,
               name: u.name,
+              image: u.image ?? null,
               grade: '',
-              rating: 4.8,
-              offers: (u.canTeach ?? [])
-                .map((label: string) => categoryByLabel.get(label.toLowerCase()))
+              rating: u.ratingAvg ?? null,
+              ratingCount: u.ratingCount ?? 0,
+              offers: offerSlugs
+                .map((slug: string) => categoryBySlug.get(slug))
                 .filter(Boolean) as SkillCategory[],
 
-              seeks: (u.wantsHelpWith ?? [])
-                .map((label: string) => categoryByLabel.get(label.toLowerCase()))
+              seeks: seekSlugs
+                .map((slug: string) => categoryBySlug.get(slug))
                 .filter(Boolean) as SkillCategory[],
+
+              offerSkills: offerSlugs
+                .map((slug: string) => ({
+                  slug,
+                  label: labelBySlug.get(slug) || slug,
+                })),
+
+              seekSkills: seekSlugs
+                .map((slug: string) => ({
+                  slug,
+                  label: labelBySlug.get(slug) || slug,
+                })),
 
               vibe: 'Friendly helper',
               locationHint: 'Flexible',
             });
           }
         });
-
-        skill.openSessions.forEach((s: any) => {
-          sessionListings.push({
-            id: s._id,
-            title: `Help with ${skill.label}`,
-            host: 'Student',
-            category: skill.category,
-            when: 'TBD',
-            duration: '30 min',
-            format: 'online',
-            spots: 1,
-          });
-        });
       });
 
       setSkills(skillListings);
       setPeople(Array.from(peopleMap.values()));
-      setSessions(sessionListings);
       setLoading(false);
     }
 
@@ -383,12 +402,6 @@ export default function ExplorePage() {
     return catOk && qOk;
   });
 
-  const filteredSessions = sessions.filter((s) => {
-    const catOk = picked === 'all' ? true : s.category === picked;
-    const qOk = matchesQuery(`${s.title} ${s.host} ${s.when} ${s.format}`);
-    return catOk && qOk;
-  });
-
   return (
     <main className="relative min-h-screen overflow-hidden text-black">
       <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-14 md:pt-16">
@@ -404,7 +417,7 @@ export default function ExplorePage() {
               transition={{ duration: 0.45 }}
               className="mt-10 text-balance text-4xl font-black tracking-tight md:text-5xl"
             >
-              Browse skills, students, and sessions —
+              Browse skills and students —
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-emerald-600 bg-clip-text text-transparent">
                 {' '}
                 pick a vibe and go.
@@ -446,13 +459,6 @@ export default function ExplorePage() {
                   icon={<Users className="h-4 w-4" />}
                   label="People"
                   onClick={() => setTab('people')}
-                />
-                <TabButton
-                  tab="sessions"
-                  current={tab}
-                  icon={<CalendarDays className="h-4 w-4" />}
-                  label="Sessions"
-                  onClick={() => setTab('sessions')}
                 />
               </div>
 
@@ -655,18 +661,14 @@ export default function ExplorePage() {
                         </div>
 
                         <div className="mt-5 flex flex-wrap gap-2">
-                          <Link
-                            href={`/request?skill=${encodeURIComponent(s.title)}`}
-                            className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/80 bg-black px-4 py-2 text-xs font-extrabold text-white shadow-[0_10px_0_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 active:translate-y-0"
-                          >
-                            Request session <ArrowRight className="h-4 w-4" />
-                          </Link>
-                          <Link
-                            href={`/profiles`}
-                            className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-4 py-2 text-xs font-extrabold text-black shadow-[0_10px_0_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 active:translate-y-0"
-                          >
-                            See profiles <Users className="h-4 w-4" />
-                          </Link>
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            <Link
+                              href={`/request?to=${encodeURIComponent(s.helperEmail)}&skillSlug=${encodeURIComponent(s.skillSlug)}&skillLabel=${encodeURIComponent(s.skillLabel)}`}
+                              className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/80 bg-black px-4 py-2 text-xs font-extrabold text-white shadow-[0_10px_0_rgba(0,0,0,0.12)] transition hover:-translate-y-0.5 active:translate-y-0"
+                            >
+                              Request session <ArrowRight className="h-4 w-4" />
+                            </Link>
+                          </div>
                         </div>
                       </PaperCard>
                     ))}
@@ -703,12 +705,31 @@ export default function ExplorePage() {
                           </div>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <BadgePill tone="good">
-                              <Star className="h-3.5 w-3.5" /> {p.rating.toFixed(1)}
+                              <Star className="h-3.5 w-3.5" />
+                              {p.rating !== null ? (
+                                <>
+                                  {p.rating.toFixed(1)}
+                                  <span className="text-black/50"> ({p.ratingCount})</span>
+                                </>
+                              ) : (
+                                <span className="text-black/50">New</span>
+                              )}
                             </BadgePill>
                           </div>
                         </div>
 
-                        <div className="h-12 w-12 rounded-2xl border-2 border-black/70 bg-gradient-to-br from-pink-200/70 via-white to-emerald-200/70 shadow-[0_10px_0_rgba(0,0,0,0.10)]" />
+                        <div className="h-12 w-12 overflow-hidden rounded-2xl border-2 border-black/70 shadow-[0_10px_0_rgba(0,0,0,0.10)]">
+                          {p.image ? (
+                            <img
+                              src={p.image}
+                              alt={p.name}
+                              className="h-full w-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-gradient-to-br from-pink-200/70 via-white to-emerald-200/70" />
+                          )}
+                        </div>
                       </div>
 
                       <p className="mt-3 text-sm font-semibold text-black/75">
@@ -718,25 +739,36 @@ export default function ExplorePage() {
                       <div className="mt-4">
                         <div className="text-xs font-black text-black/70">Offers</div>
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {p.offers
-                            .filter((c) => categoryMeta[c as SkillCategory])
-                            .slice(0, 3)
-                            .map((c) => (
-                              <BadgePill key={`${p.id}-o-${c}`} tone="good">
-                                {categoryMeta[c as SkillCategory].label}
-                              </BadgePill>
-                            ))}
+                          {p.offerSkills?.length > 0 ? (
+                            p.offerSkills.slice(0, 3).map((skill) => (
+                              <span
+                                key={`${p.id}-offer-${skill.slug}`}
+                                className="rounded-full border-2 border-emerald-600 bg-emerald-50 px-3 py-1 text-xs font-extrabold text-emerald-700"
+                              >
+                                {skill.label}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-black/50">Nothing listed</span>
+                          )}
                         </div>
                       </div>
 
                       <div className="mt-4">
                         <div className="text-xs font-black text-black/70">Wants</div>
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {p.seeks.slice(0, 3).map((c) => (
-                            <BadgePill key={`${p.id}-s-${c}`} tone="warn">
-                              {categoryMeta[c]?.label ?? String(c)}
-                            </BadgePill>
-                          ))}
+                          {p.seekSkills?.length > 0 ? (
+                            p.seekSkills.slice(0, 3).map((skill) => (
+                              <span
+                                key={`${p.id}-seek-${skill.slug}`}
+                                className="rounded-full border-2 border-orange-600 bg-orange-50 px-3 py-1 text-xs font-extrabold text-orange-700"
+                              >
+                                {skill.label}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-black/50">Nothing listed</span>
+                          )}
                         </div>
                       </div>
 
@@ -748,7 +780,7 @@ export default function ExplorePage() {
                           View profile <ArrowRight className="h-4 w-4" />
                         </Link>
                         <Link
-                          href={`/messages?to=${encodeURIComponent(p.name)}`}
+                          href={`/messages?to=${encodeURIComponent(p.id)}`}
                           className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-4 py-2 text-xs font-extrabold text-black shadow-[0_10px_0_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 active:translate-y-0"
                         >
                           Message

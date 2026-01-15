@@ -20,6 +20,7 @@ import {
   LogOut,
   User,
   Settings,
+  Inbox, // ✅ add
 } from 'lucide-react';
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -74,10 +75,10 @@ function StickerCTA({
     tone === 'black'
       ? 'bg-black text-white'
       : tone === 'pink'
-      ? 'bg-pink-600 text-white'
-      : tone === 'green'
-      ? 'bg-emerald-600 text-white'
-      : 'bg-sky-600 text-white';
+        ? 'bg-pink-600 text-white'
+        : tone === 'green'
+          ? 'bg-emerald-600 text-white'
+          : 'bg-sky-600 text-white';
 
   return (
     <Link
@@ -209,6 +210,15 @@ function ProfileMenu({
                 </Link>
 
                 <Link
+                  href="/inbox"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-3 py-2 text-sm font-extrabold shadow-[0_8px_0_rgba(0,0,0,0.08)] hover:bg-slate-50"
+                >
+                  <Inbox className="h-4 w-4" />
+                  Inbox
+                </Link>
+
+                <Link
                   href="/onboarding"
                   onClick={() => setOpen(false)}
                   className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-3 py-2 text-sm font-extrabold shadow-[0_8px_0_rgba(0,0,0,0.08)] hover:bg-slate-50"
@@ -243,7 +253,7 @@ export default function Navbar() {
   const items = useMemo(
     () => [
       { href: '/explore', label: 'Explore', icon: <Search className="h-4 w-4" /> },
-      { href: '/sessions', label: 'Sessions', icon: <CalendarDays className="h-4 w-4" /> },
+      // { href: '/sessions', label: 'Sessions', icon: <CalendarDays className="h-4 w-4" /> },
       { href: '/community', label: 'Community', icon: <Users className="h-4 w-4" /> },
       { href: '/safety', label: 'Safety', icon: <ShieldCheck className="h-4 w-4" /> },
     ],
@@ -386,6 +396,15 @@ export default function Navbar() {
                         >
                           <User className="h-4 w-4" />
                           View profile
+                        </Link>
+
+                        <Link
+                          href="/inbox"
+                          onClick={() => setOpen(false)}
+                          className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-3 py-2 text-sm font-extrabold shadow-[0_8px_0_rgba(0,0,0,0.08)] hover:bg-slate-50"
+                        >
+                          <Inbox className="h-4 w-4" />
+                          Inbox
                         </Link>
 
                         <Link

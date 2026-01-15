@@ -10,6 +10,9 @@ export interface User {
   email: string;
   image?: string;
 
+  ratingAvg: number      // e.g. 4.83
+  ratingCount: number
+
   // Skills
   canTeach: string[];
   wantsHelpWith: string[];

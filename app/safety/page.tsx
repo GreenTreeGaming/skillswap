@@ -4,20 +4,19 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  CalendarDays,
-  CheckCircle2,
-  GraduationCap,
-  MessageSquare,
   Shield,
-  Sparkles,
+  CheckCircle2,
+  AlertTriangle,
+  Lock,
+  EyeOff,
+  MessageSquare,
+  CalendarDays,
   Star,
+  Flag,
   Users,
-  Zap,
-  Music,
-  Code2,
-  Calculator,
-  Camera,
-  Palette,
+  MapPin,
+  Globe,
+  FileWarning,
 } from 'lucide-react';
 
 const floaty = {
@@ -53,8 +52,7 @@ function StickerButton({
       className={[
         'group inline-flex items-center gap-2 rounded-[18px] px-5 py-3 text-sm font-semibold',
         'shadow-[0_10px_0_rgba(0,0,0,0.12)] transition active:translate-y-1 active:shadow-[0_6px_0_rgba(0,0,0,0.12)]',
-        'border-2 border-black/80',
-        'hover:-rotate-1',
+        'border-2 border-black/80 hover:-rotate-1',
         toneClasses,
       ].join(' ')}
     >
@@ -64,13 +62,7 @@ function StickerButton({
   );
 }
 
-function Tape({
-  className = '',
-  label,
-}: {
-  className?: string;
-  label: string;
-}) {
+function Tape({ className = '', label }: { className?: string; label: string }) {
   return (
     <div
       className={[
@@ -108,18 +100,49 @@ function Scribble({ className = '' }: { className?: string }) {
   );
 }
 
+function MiniPill({
+  icon,
+  label,
+  tone = 'white',
+}: {
+  icon: React.ReactNode;
+  label: string;
+  tone?: 'white' | 'yellow' | 'green';
+}) {
+  const bg =
+    tone === 'yellow'
+      ? 'bg-yellow-200/70'
+      : tone === 'green'
+      ? 'bg-emerald-200/70'
+      : 'bg-white';
+
+  return (
+    <div
+      className={[
+        'inline-flex items-center gap-2 rounded-full border-2 border-black/70 px-3 py-1.5 text-xs font-semibold text-black shadow-[0_6px_0_rgba(0,0,0,0.10)]',
+        bg,
+      ].join(' ')}
+    >
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
+}
+
 function PaperCard({
   title,
   kids,
   icon,
   color = 'from-pink-200/60 via-white to-emerald-200/50',
   tilt = -1,
+  tags = ['practical', 'student-first', 'clear'],
 }: {
   title: string;
   kids: string;
   icon: React.ReactNode;
   color?: string;
   tilt?: number;
+  tags?: string[];
 }) {
   return (
     <motion.div
@@ -130,15 +153,8 @@ function PaperCard({
       ].join(' ')}
       style={{ transform: `rotate(${tilt}deg)` }}
     >
-      <div
-        className={[
-          'absolute inset-0 opacity-70',
-          'bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.9),transparent_55%),radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.9),transparent_50%)]',
-        ].join(' ')}
-      />
+      <div className="absolute inset-0 opacity-70 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.9),transparent_55%),radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.9),transparent_50%)]" />
       <div className={`absolute inset-0 bg-gradient-to-br ${color}`} />
-
-      {/* paper grain */}
       <div className="absolute inset-0 opacity-[0.10] [background-image:radial-gradient(rgba(0,0,0,0.9)_1px,transparent_1px)] [background-size:18px_18px]" />
 
       <div className="relative p-6">
@@ -152,40 +168,53 @@ function PaperCard({
         </div>
         <p className="mt-3 text-sm leading-relaxed text-black/75">{kids}</p>
 
-        <div className="mt-5 flex items-center gap-2 text-xs font-semibold text-black/70">
-          <span className="rounded-full border border-black/50 bg-white px-3 py-1">
-            quick
-          </span>
-          <span className="rounded-full border border-black/50 bg-white px-3 py-1">
-            friendly
-          </span>
-          <span className="rounded-full border border-black/50 bg-white px-3 py-1">
-            student-made
-          </span>
+        <div className="mt-5 flex flex-wrap items-center gap-2 text-xs font-semibold text-black/70">
+          {tags.map((t) => (
+            <span
+              key={t}
+              className="rounded-full border border-black/50 bg-white px-3 py-1"
+            >
+              {t}
+            </span>
+          ))}
         </div>
       </div>
     </motion.div>
   );
 }
 
-function MiniSkill({ icon, label }: { icon: React.ReactNode; label: string }) {
+function RuleRow({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border-2 border-black/70 bg-white px-3 py-1.5 text-xs font-semibold text-black shadow-[0_6px_0_rgba(0,0,0,0.10)]">
-      {icon}
-      <span>{label}</span>
+    <div className="rounded-3xl border-2 border-black/70 bg-white p-5 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
+      <div className="flex items-center gap-2 text-sm font-black">
+        {icon}
+        {title}
+      </div>
+      <div className="mt-2 text-xs font-semibold text-black/70">{desc}</div>
     </div>
   );
 }
 
-export default function Home() {
+function Divider() {
+  return (
+    <div className="my-10 h-px w-full bg-black/10" />
+  );
+}
+
+export default function page() {
   return (
     <main className="relative min-h-screen overflow-hidden text-black">
-      {/* playful background */}
+      {/* background */}
       <div className="pointer-events-none absolute inset-0">
-        {/* base wash */}
         <div className="absolute inset-0 bg-gradient-to-b from-white via-[#fbfbff] to-white" />
-
-        {/* big blobs */}
         <motion.div
           className="absolute -left-32 -top-36 h-[520px] w-[520px] rounded-full bg-gradient-to-br from-pink-300/35 via-purple-300/25 to-sky-300/25 blur-3xl"
           animate={{ x: [0, 60, 0], y: [0, 30, 0] }}
@@ -201,8 +230,8 @@ export default function Home() {
       <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-14 md:pt-16">
         {/* HERO */}
         <section className="relative">
-          <Tape className="left-4 top-2 rotate-[-6deg]" label="new ✨" />
-          <Tape className="right-6 top-10 rotate-[5deg]" label="made for students" />
+          <Tape className="left-4 top-2 rotate-[-6deg]" label="safety ✨" />
+          <Tape className="right-6 top-10 rotate-[5deg]" label="student-first" />
 
           <div className="mx-auto max-w-4xl text-center">
             <motion.div
@@ -211,49 +240,40 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex flex-wrap items-center justify-center gap-2">
-                <MiniSkill icon={<Code2 className="h-4 w-4" />} label="coding" />
-                <MiniSkill icon={<Calculator className="h-4 w-4" />} label="math" />
-                <MiniSkill icon={<Music className="h-4 w-4" />} label="music" />
-                <MiniSkill icon={<Palette className="h-4 w-4" />} label="art" />
-                <MiniSkill icon={<Camera className="h-4 w-4" />} label="photo" />
+                <MiniPill icon={<Shield className="h-4 w-4" />} label="safety controls" tone="yellow" />
+                <MiniPill icon={<Lock className="h-4 w-4" />} label="private by default" />
+                <MiniPill icon={<MessageSquare className="h-4 w-4" />} label="in-app messaging" />
+                <MiniPill icon={<Star className="h-4 w-4" />} label="ratings & accountability" tone="green" />
               </div>
 
               <h1 className="mt-7 text-balance text-4xl font-black tracking-tight md:text-6xl">
-                Trade what you’re good at…
+                Built-in safety —
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-emerald-600 bg-clip-text text-transparent">
-                    learn what you’re curious about
+                    {' '}
+                    not an afterthought
                   </span>
                   <Scribble className="absolute -bottom-6 left-1/2 h-10 w-52 -translate-x-1/2 rotate-[-2deg] opacity-70 md:w-72" />
                 </span>
                 .
               </h1>
 
-              <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-black/75 md:text-lg">
-                <span className="font-semibold">SkillSwap</span> is a student talent exchange:
-                offer a skill, request a skill, schedule a session, and leave feedback.
-                It’s like a friendly hallway conversation, but organized.
+              <p className="mx-auto mt-6 max-w-3xl text-pretty text-base leading-relaxed text-black/75 md:text-lg">
+                SkillSwap is designed for students. Here’s the real safety stuff we built into the site:
+                requests go through the Inbox, session details are shared inside the app, and sessions only close
+                when both people finish — then the requester can rate the tutor.
               </p>
 
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <StickerButton href="/explore" tone="black">
-                  Explore skills
+                  Browse skills
                 </StickerButton>
-                <StickerButton href="/signup" tone="pink">
-                  Make a profile
+                <StickerButton href="/inbox" tone="blue">
+                  Safety lives in Inbox
                 </StickerButton>
-              </div>
-
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold">
-                <span className="inline-flex items-center gap-2 rounded-full border-2 border-black/70 bg-white px-3 py-1.5 shadow-[0_6px_0_rgba(0,0,0,0.10)]">
-                  <Shield className="h-4 w-4" /> safety-first
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border-2 border-black/70 bg-white px-3 py-1.5 shadow-[0_6px_0_rgba(0,0,0,0.10)]">
-                  <CalendarDays className="h-4 w-4" /> simple scheduling
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border-2 border-black/70 bg-white px-3 py-1.5 shadow-[0_6px_0_rgba(0,0,0,0.10)]">
-                  <Star className="h-4 w-4" /> ratings & feedback
-                </span>
+                <StickerButton href="/community" tone="pink">
+                  Community norms
+                </StickerButton>
               </div>
             </motion.div>
           </div>
@@ -268,7 +288,7 @@ export default function Home() {
               custom={1}
               style={{ rotate: -6 }}
             >
-              “Need help with vectors?” <span className="opacity-70">→ request</span>
+              “No link? no session.” <span className="opacity-70">Set it in Inbox.</span>
             </motion.div>
 
             <motion.div
@@ -279,7 +299,7 @@ export default function Home() {
               custom={2}
               style={{ rotate: 7 }}
             >
-              “Teach me guitar chords 🎸”
+              “Finish → then rate.” <span className="opacity-70">Accountability.</span>
             </motion.div>
 
             <motion.div
@@ -290,111 +310,138 @@ export default function Home() {
               custom={3}
               style={{ rotate: 4 }}
             >
-              swap skills. keep it chill.
+              meet in public • be respectful
             </motion.div>
 
-            {/* main “board” */}
+            {/* safety board */}
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="relative overflow-hidden rounded-[32px] border-2 border-black/70 bg-white shadow-[0_22px_0_rgba(0,0,0,0.10)]"
             >
-              {/* doodle header */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-black/70 bg-gradient-to-r from-yellow-200/70 via-white to-emerald-200/50 px-6 py-4">
                 <div className="inline-flex items-center gap-2 text-sm font-black">
-                  <Sparkles className="h-4 w-4" />
-                  Today’s vibe: learn something new
+                  <Shield className="h-4 w-4" />
+                  Safety checklist (inside the app)
                 </div>
                 <div className="inline-flex items-center gap-2 text-xs font-bold opacity-80">
                   <Users className="h-4 w-4" />
-                  3 matches waiting
+                  student-to-student sessions
                 </div>
               </div>
 
               <div className="grid gap-5 p-6 md:grid-cols-12">
-                {/* left column */}
+                {/* left */}
                 <div className="md:col-span-5">
                   <div className="rounded-3xl border-2 border-black/70 bg-white p-4 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm font-black">Skill menu</div>
-                    </div>
+                    <div className="text-sm font-black">What we built</div>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="mt-4 space-y-3">
                       {[
-                        { label: 'AP Calc', icon: <Calculator className="h-4 w-4" /> },
-                        { label: 'Python', icon: <Code2 className="h-4 w-4" /> },
-                        { label: 'Guitar', icon: <Music className="h-4 w-4" /> },
-                        { label: 'Art', icon: <Palette className="h-4 w-4" /> },
-                        { label: 'Homework', icon: <GraduationCap className="h-4 w-4" /> },
-                        { label: 'Study group', icon: <Users className="h-4 w-4" /> },
+                        {
+                          icon: <MessageSquare className="h-4 w-4" />,
+                          t: 'Inbox-based requests',
+                          d: 'Requests are accepted/rejected in one place (less chaos, more visibility).',
+                        },
+                        {
+                          icon: <CalendarDays className="h-4 w-4" />,
+                          t: 'Session details stored in-app',
+                          d: 'Meeting link (online) or address (in-person) is saved on the session by the tutor.',
+                        },
+                        {
+                          icon: <CheckCircle2 className="h-4 w-4" />,
+                          t: 'Two-step session close',
+                          d: 'Both people must click “Finish class” before it becomes completed.',
+                        },
+                        {
+                          icon: <Star className="h-4 w-4" />,
+                          t: 'Rating after completion',
+                          d: 'Only the requester can rate, and only after the session is completed.',
+                        },
                       ].map((x) => (
                         <div
-                          key={x.label}
-                          className="inline-flex items-center gap-2 rounded-full border-2 border-black/70 bg-white px-3 py-2 text-xs font-extrabold shadow-[0_8px_0_rgba(0,0,0,0.08)]"
+                          key={x.t}
+                          className="rounded-2xl border-2 border-black/70 bg-white px-4 py-3 shadow-[0_10px_0_rgba(0,0,0,0.08)]"
                         >
-                          {x.icon}
-                          {x.label}
+                          <div className="flex items-center gap-2 text-xs font-black">
+                            {x.icon}
+                            {x.t}
+                          </div>
+                          <div className="mt-1 text-xs font-semibold text-black/70">
+                            {x.d}
+                          </div>
                         </div>
                       ))}
                     </div>
 
                     <div className="mt-5 rounded-2xl border-2 border-dashed border-black/50 bg-yellow-50 p-4">
-                      <div className="text-xs font-black">Pro tip</div>
+                      <div className="text-xs font-black">Good default</div>
                       <div className="mt-1 text-xs font-semibold text-black/70">
-                        Add 2 skills you can teach, and you’ll get better matches.
+                        If something feels off, don’t continue the session. You can stop and message/report.
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* right column */}
+                {/* right */}
                 <div className="md:col-span-7">
                   <div className="grid gap-4">
                     <div className="rounded-3xl border-2 border-black/70 bg-white p-4 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
                       <div className="flex items-center gap-3">
-                        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-black/70 bg-pink-100 shadow-[0_8px_0_rgba(0,0,0,0.10)]">
-                          <MessageSquare className="h-5 w-5" />
+                        <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border-2 border-black/70 bg-emerald-100 shadow-[0_8px_0_rgba(0,0,0,0.10)]">
+                          <Lock className="h-5 w-5" />
                         </div>
                         <div>
-                          <div className="text-sm font-black">Session request</div>
+                          <div className="text-sm font-black">Privacy + control</div>
                           <div className="text-xs font-semibold text-black/65">
-                            quick chat → confirm time → done
+                            minimize oversharing, maximize clarity
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-4 space-y-2 text-xs font-semibold">
-                        <div className="w-fit max-w-[92%] rounded-2xl border-2 border-black/70 bg-black px-3 py-2 text-white shadow-[0_8px_0_rgba(0,0,0,0.10)]">
-                          can someone explain momentum 😭
-                        </div>
-                        <div className="ml-auto w-fit max-w-[92%] rounded-2xl border-2 border-black/70 bg-white px-3 py-2 text-black shadow-[0_8px_0_rgba(0,0,0,0.10)]">
-                          yeah I can! 25 mins after school? i’ll bring practice FRQs.
-                        </div>
-                        <div className="w-fit max-w-[92%] rounded-2xl border-2 border-black/70 bg-black px-3 py-2 text-white shadow-[0_8px_0_rgba(0,0,0,0.10)]">
-                          YES. thank you!!
-                        </div>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <RuleRow
+                          icon={<EyeOff className="h-4 w-4" />}
+                          title="Share details only in Inbox"
+                          desc="Don’t post links/addresses publicly. Keep it inside the session thread."
+                        />
+                        <RuleRow
+                          icon={<Shield className="h-4 w-4" />}
+                          title="Ratings create accountability"
+                          desc="Reliable helpers get surfaced; bad experiences leave a trail."
+                        />
+                        <RuleRow
+                          icon={<Flag className="h-4 w-4" />}
+                          title="Stop if it feels wrong"
+                          desc="Trust your gut. Leave, message, and report if needed."
+                        />
+                        <RuleRow
+                          icon={<FileWarning className="h-4 w-4" />}
+                          title="No unsafe/harassing behavior"
+                          desc="Any harassment, threats, or pressure is not allowed—period."
+                        />
                       </div>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="rounded-3xl border-2 border-black/70 bg-white p-4 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
                         <div className="flex items-center gap-2">
-                          <Zap className="h-5 w-5" />
-                          <div className="text-sm font-black">Fast scheduling</div>
+                          <MapPin className="h-5 w-5" />
+                          <div className="text-sm font-black">In-person safety</div>
                         </div>
                         <p className="mt-2 text-xs font-semibold text-black/70">
-                          Pick a time. Confirm it. Show up. That’s the whole thing.
+                          Meet in a public school/common area. Bring a friend if you want. Don’t go to private locations.
                         </p>
                       </div>
 
                       <div className="rounded-3xl border-2 border-black/70 bg-white p-4 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
                         <div className="flex items-center gap-2">
-                          <Shield className="h-5 w-5" />
-                          <div className="text-sm font-black">Safety controls</div>
+                          <Globe className="h-5 w-5" />
+                          <div className="text-sm font-black">Online safety</div>
                         </div>
                         <p className="mt-2 text-xs font-semibold text-black/70">
-                          Privacy settings + verified profiles + moderation tools.
+                          Use a normal meeting link. Don’t share passwords or personal info. Keep chat inside SkillSwap.
                         </p>
                       </div>
                     </div>
@@ -405,68 +452,68 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURE CARDS (human, varied) */}
-        <section className="mt-16 md:mt-20">
+        <Divider />
+
+        {/* “Real things you’ll see in the UI” */}
+        <section className="mt-2 md:mt-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-black tracking-tight md:text-4xl">
-              The “actually-useful” stuff
+              Real safety behaviors in the product
             </h2>
             <p className="mt-3 text-sm font-semibold text-black/70 md:text-base">
-              Profiles, scheduling, requests, feedback + optional messaging,
-              groups, and admin monitoring.
+              These aren’t “policy words” — they map to actual screens you built.
             </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <PaperCard
-              title="Profiles that feel real"
-              kids="Show what you can teach + what you want to learn. Add availability, goals, and your vibe."
-              icon={<Users className="h-5 w-5" />}
+              title="Tutor sets meeting link/address"
+              kids="On accepted sessions, the tutor can save the meeting link (online) or address (in-person) inside the session details box."
+              icon={<CalendarDays className="h-5 w-5" />}
               tilt={-2}
               color="from-yellow-200/70 via-white to-pink-200/60"
+              tags={['in-app', 'clear', 'no scrambling']}
             />
             <PaperCard
-              title="Request → schedule → done"
-              kids="Send a request, propose a time, and meet. No endless group chats."
-              icon={<CalendarDays className="h-5 w-5" />}
+              title="Both must finish to close"
+              kids="The session only completes when both people click “Finish class”. This prevents ‘fake’ completions and keeps status honest."
+              icon={<CheckCircle2 className="h-5 w-5" />}
               tilt={1.5}
               color="from-emerald-200/60 via-white to-sky-200/60"
+              tags={['mutual', 'transparent', 'fair']}
             />
             <PaperCard
-              title="Feedback builds trust"
-              kids="Rate sessions so great helpers get found. Bad experiences? Easier to moderate."
+              title="Requester-only rating after"
+              kids="Only the requester can rate the tutor, only after completion. That rating updates the tutor’s average + count."
               icon={<Star className="h-5 w-5" />}
               tilt={-1}
               color="from-purple-200/60 via-white to-yellow-200/60"
+              tags={['accountability', 'trust', 'earned']}
             />
           </div>
 
-          {/* little “handmade” callout row */}
-          <div className="mt-10 grid gap-4 md:grid-cols-4">
-            {[
-              { icon: <MessageSquare className="h-4 w-4" />, title: 'Messaging', desc: 'Coordinate without chaos.' },
-              { icon: <GraduationCap className="h-4 w-4" />, title: 'Group sessions', desc: 'Clubs + study squads.' },
-              { icon: <Shield className="h-4 w-4" />, title: 'Privacy', desc: 'Control visibility + DMs.' },
-              { icon: <CheckCircle2 className="h-4 w-4" />, title: 'Admin panel', desc: 'Monitor activity & users.' },
-            ].map((x, i) => (
-              <motion.div
-                key={x.title}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="rounded-3xl border-2 border-black/70 bg-white p-5 shadow-[0_14px_0_rgba(0,0,0,0.10)]"
-                style={{ transform: `rotate(${i % 2 === 0 ? -0.8 : 0.8}deg)` }}
-              >
-                <div className="flex items-center gap-2 text-sm font-black">
-                  {x.icon}
-                  {x.title}
+          <div className="mt-10 rounded-[34px] border-2 border-black/70 bg-white p-7 shadow-[0_18px_0_rgba(0,0,0,0.10)] md:p-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-yellow-200/70 px-3 py-2 text-sm font-black shadow-[0_10px_0_rgba(0,0,0,0.10)]">
+                  <AlertTriangle className="h-4 w-4" />
+                  If you feel unsafe
                 </div>
-                <div className="mt-2 text-xs font-semibold text-black/70">
-                  {x.desc}
-                </div>
-              </motion.div>
-            ))}
+                <p className="mt-3 text-sm font-semibold text-black/70">
+                  Leave the situation immediately. For in-person, go to a public area.
+                  For online, leave the call. Then message through SkillSwap and contact a trusted adult/school staff.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 md:justify-end">
+                <StickerButton href="/inbox" tone="blue">
+                  Go to Inbox
+                </StickerButton>
+                <StickerButton href="/explore" tone="black">
+                  Explore
+                </StickerButton>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -479,25 +526,24 @@ export default function Home() {
             <div className="relative grid items-center gap-6 md:grid-cols-12">
               <div className="md:col-span-8">
                 <h3 className="text-3xl font-black tracking-tight md:text-4xl">
-                  Ready to trade skills?
+                  Safety is a feature — and a habit.
                 </h3>
                 <p className="mt-3 text-sm font-semibold text-black/75 md:text-base">
-                  Make a profile in 60 seconds, request your first session, and
-                  learn from someone who’s literally down the hall.
+                  Use Inbox for session details, meet in public places, and rate honestly after sessions.
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
                   <StickerButton href="/signup" tone="green">
                     Create profile
                   </StickerButton>
-                  <StickerButton href="/explore" tone="blue">
-                    Browse skills
+                  <StickerButton href="/inbox" tone="blue">
+                    Manage sessions
                   </StickerButton>
                   <Link
-                    href="/login"
+                    href="/community"
                     className="self-center text-sm font-black underline decoration-black/40 underline-offset-4 hover:decoration-black"
                   >
-                    Sign in
+                    Community norms
                   </Link>
                 </div>
               </div>
@@ -505,21 +551,21 @@ export default function Home() {
               <div className="md:col-span-4">
                 <div className="rounded-3xl border-2 border-black/70 bg-white p-5 shadow-[0_14px_0_rgba(0,0,0,0.10)]">
                   <div className="flex items-center gap-2 text-sm font-black">
-                    <Sparkles className="h-4 w-4" />
-                    Quick start checklist
+                    <Shield className="h-4 w-4" />
+                    Safety recap
                   </div>
                   <div className="mt-3 space-y-2 text-xs font-semibold text-black/75">
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                      Add 2 skills you can teach
+                      Keep links/addresses in Inbox
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                      Add 1 skill you want to learn
+                      Meet in public places
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-4 w-4" />
-                      Request your first session
+                      Finish → then rate honestly
                     </div>
                   </div>
                 </div>
@@ -528,7 +574,7 @@ export default function Home() {
           </div>
 
           <footer className="mt-10 text-center text-xs font-semibold text-black/55">
-            © {new Date().getFullYear()} SkillSwap • student talent exchange platform
+            © {new Date().getFullYear()} SkillSwap • safety
           </footer>
         </section>
       </div>
