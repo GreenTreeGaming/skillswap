@@ -20,6 +20,8 @@ import {
   Palette,
 } from 'lucide-react';
 
+import { useSession } from 'next-auth/react';
+
 const floaty = {
   initial: { y: 0 },
   animate: (i: number) => ({
@@ -42,10 +44,10 @@ function StickerButton({
     tone === 'black'
       ? 'bg-black text-white'
       : tone === 'blue'
-      ? 'bg-sky-600 text-white'
-      : tone === 'green'
-      ? 'bg-emerald-600 text-white'
-      : 'bg-pink-600 text-white';
+        ? 'bg-sky-600 text-white'
+        : tone === 'green'
+          ? 'bg-emerald-600 text-white'
+          : 'bg-pink-600 text-white';
 
   return (
     <Link
@@ -178,6 +180,10 @@ function MiniSkill({ icon, label }: { icon: React.ReactNode; label: string }) {
 }
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const isAuthed = status === 'authenticated';
+  if (status === 'loading') return null;
+
   return (
     <main className="relative min-h-screen overflow-hidden text-black">
       {/* playful background */}
@@ -239,8 +245,8 @@ export default function Home() {
                 <StickerButton href="/explore" tone="black">
                   Explore skills
                 </StickerButton>
-                <StickerButton href="/signup" tone="pink">
-                  Make a profile
+                <StickerButton href={isAuthed ? '/profile' : '/signup'} tone="pink">
+                  {isAuthed ? 'View profile' : 'Make a profile'}
                 </StickerButton>
               </div>
 
@@ -487,9 +493,18 @@ export default function Home() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <StickerButton href="/signup" tone="green">
-                    Create profile
+                  <StickerButton href={isAuthed ? '/profile' : '/signup'} tone="green">
+                    {isAuthed ? 'View profile' : 'Create profile'}
                   </StickerButton>
+
+                  {!isAuthed && (
+                    <Link
+                      href="/login"
+                      className="self-center text-sm font-black underline decoration-black/40 underline-offset-4 hover:decoration-black"
+                    >
+                      Sign in
+                    </Link>
+                  )}
                   <StickerButton href="/explore" tone="blue">
                     Browse skills
                   </StickerButton>

@@ -20,6 +20,8 @@ import {
   Zap,
 } from 'lucide-react';
 
+import { useSession } from 'next-auth/react';
+
 const floaty = {
   initial: { y: 0 },
   animate: (i: number) => ({
@@ -198,6 +200,9 @@ function RuleRow({
 }
 
 export default function page() {
+  const { data: session, status } = useSession();
+  const isAuthed = status === 'authenticated';
+  if (status === 'loading') return null;
   return (
     <main className="relative min-h-screen overflow-hidden text-black">
       {/* background (same vibe as other pages) */}
@@ -258,8 +263,8 @@ export default function page() {
                 <StickerButton href="/inbox" tone="blue">
                   View inbox
                 </StickerButton>
-                <StickerButton href="/signup" tone="pink">
-                  Make a profile
+                <StickerButton href={isAuthed ? '/profile' : '/signup'} tone="pink">
+                  {isAuthed ? 'View profile' : 'Make a profile'}
                 </StickerButton>
               </div>
             </motion.div>
@@ -562,18 +567,21 @@ export default function page() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <StickerButton href="/signup" tone="green">
-                    Create profile
+                  <StickerButton href={isAuthed ? '/profile' : '/signup'} tone="green">
+                    {isAuthed ? 'View profile' : 'Create profile'}
                   </StickerButton>
                   <StickerButton href="/explore" tone="blue">
                     Browse skills
                   </StickerButton>
-                  <Link
-                    href="/login"
-                    className="self-center text-sm font-black underline decoration-black/40 underline-offset-4 hover:decoration-black"
-                  >
-                    Sign in
-                  </Link>
+
+                  {!isAuthed && (
+                    <Link
+                      href="/login"
+                      className="self-center text-sm font-black underline decoration-black/40 underline-offset-4 hover:decoration-black"
+                    >
+                      Sign in
+                    </Link>
+                  )}
                 </div>
               </div>
 

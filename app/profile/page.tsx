@@ -10,6 +10,7 @@ import {
   LogOut,
   GraduationCap,
   HelpCircle,
+  Star,
 } from 'lucide-react';
 
 interface UserDoc {
@@ -18,6 +19,8 @@ interface UserDoc {
   image?: string;
   canTeach: string[];
   wantsHelpWith: string[];
+  ratingAvg?: number;
+  ratingCount?: number;
 }
 
 interface Skill {
@@ -88,6 +91,9 @@ export default function ProfilePage() {
   }
 
   if (!user) return null;
+  const hasRating =
+    typeof user.ratingAvg === 'number' &&
+    Number.isFinite(user.ratingAvg);
 
   return (
     <main className="relative mx-auto max-w-5xl px-6 pb-20 pt-12 text-black">
@@ -122,9 +128,26 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-black tracking-tight">
                 {user.name}
               </h1>
-              <p className="text-sm font-semibold text-black/65">
-                {user.email}
-              </p>
+
+              <div className="mt-1 flex flex-wrap items-center gap-2">
+                <p className="text-sm font-semibold text-black/65">
+                  {user.email}
+                </p>
+
+                <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-black/70 bg-emerald-100 px-3 py-1 text-[11px] font-extrabold shadow-[0_6px_0_rgba(0,0,0,0.08)]">
+                  <Star className="h-3.5 w-3.5" />
+                  {hasRating ? (
+                    <>
+                      {user.ratingAvg!.toFixed(1)}
+                      <span className="text-black/60">
+                        ({user.ratingCount ?? 0})
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-black/60">New</span>
+                  )}
+                </span>
+              </div>
             </div>
           </div>
 

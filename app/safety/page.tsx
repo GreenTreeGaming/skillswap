@@ -19,6 +19,8 @@ import {
   FileWarning,
 } from 'lucide-react';
 
+import { useSession } from 'next-auth/react';
+
 const floaty = {
   initial: { y: 0 },
   animate: (i: number) => ({
@@ -41,10 +43,10 @@ function StickerButton({
     tone === 'black'
       ? 'bg-black text-white'
       : tone === 'blue'
-      ? 'bg-sky-600 text-white'
-      : tone === 'green'
-      ? 'bg-emerald-600 text-white'
-      : 'bg-pink-600 text-white';
+        ? 'bg-sky-600 text-white'
+        : tone === 'green'
+          ? 'bg-emerald-600 text-white'
+          : 'bg-pink-600 text-white';
 
   return (
     <Link
@@ -113,8 +115,8 @@ function MiniPill({
     tone === 'yellow'
       ? 'bg-yellow-200/70'
       : tone === 'green'
-      ? 'bg-emerald-200/70'
-      : 'bg-white';
+        ? 'bg-emerald-200/70'
+        : 'bg-white';
 
   return (
     <div
@@ -210,6 +212,9 @@ function Divider() {
 }
 
 export default function page() {
+  const { status } = useSession();
+  const isAuthed = status === 'authenticated';
+  if (status === 'loading') return null;
   return (
     <main className="relative min-h-screen overflow-hidden text-black">
       {/* background */}
@@ -533,8 +538,8 @@ export default function page() {
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <StickerButton href="/signup" tone="green">
-                    Create profile
+                  <StickerButton href={isAuthed ? '/profile' : '/signup'} tone="green">
+                    {isAuthed ? 'View profile' : 'Create profile'}
                   </StickerButton>
                   <StickerButton href="/inbox" tone="blue">
                     Manage sessions

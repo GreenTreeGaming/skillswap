@@ -163,14 +163,8 @@ export default function ProfilePage({
                     {/* CTA */}
                     <div className="mt-10 flex flex-wrap gap-3">
                         <Link
-                            href={`/messages?to=${encodeURIComponent(profile.email)}`}
-                            className="rounded-[18px] border-2 border-black bg-black px-6 py-3 text-sm font-extrabold text-white shadow-[0_10px_0_rgba(0,0,0,0.20)]"
-                        >
-                            Message
-                        </Link>
-                        <Link
                             href={`/request?to=${encodeURIComponent(profile.email)}&skillSlug=${profile.canTeach[0]?.slug}&skillLabel=${profile.canTeach[0]?.label}`}
-                            className="rounded-[18px] border-2 border-black/70 bg-white px-6 py-3 text-sm font-extrabold shadow-[0_10px_0_rgba(0,0,0,0.10)]"
+                            className="rounded-[18px] border-2 border-black bg-black px-6 py-3 text-sm font-extrabold text-white shadow-[0_10px_0_rgba(0,0,0,0.20)]"
                         >
                             Request session
                         </Link>

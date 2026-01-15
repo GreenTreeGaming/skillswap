@@ -779,12 +779,6 @@ export default function ExplorePage() {
                         >
                           View profile <ArrowRight className="h-4 w-4" />
                         </Link>
-                        <Link
-                          href={`/messages?to=${encodeURIComponent(p.id)}`}
-                          className="inline-flex items-center gap-2 rounded-2xl border-2 border-black/70 bg-white px-4 py-2 text-xs font-extrabold text-black shadow-[0_10px_0_rgba(0,0,0,0.08)] transition hover:-translate-y-0.5 active:translate-y-0"
-                        >
-                          Message
-                        </Link>
                       </div>
                     </PaperCard>
                   ))}

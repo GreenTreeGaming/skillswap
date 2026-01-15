@@ -265,6 +265,28 @@ export default function Navbar() {
   }, [pathname]);
 
   const isAuthed = status === 'authenticated';
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'authenticated') {
+      setIsAdmin(false);
+      return;
+    }
+
+    async function loadAdmin() {
+      try {
+        const res = await fetch('/api/profile');
+        if (!res.ok) return;
+
+        const user = await res.json();
+        setIsAdmin(user?.admin === true);
+      } catch {
+        setIsAdmin(false);
+      }
+    }
+
+    loadAdmin();
+  }, [status]);
 
   return (
     <header className="sticky top-0 z-50">
@@ -314,6 +336,15 @@ export default function Navbar() {
                   active={pathname === it.href}
                 />
               ))}
+
+              {isAdmin && (
+                <NavPill
+                  href="/admin"
+                  label="Admin Dashboard"
+                  icon={<ShieldCheck className="h-4 w-4" />}
+                  active={pathname.startsWith('/admin')}
+                />
+              )}
             </nav>
 
             {/* Desktop right side */}
@@ -449,6 +480,16 @@ export default function Navbar() {
                       </motion.div>
                     ))}
                   </div>
+
+                  {isAdmin && (
+                    <NavPill
+                      href="/admin"
+                      label="Admin Dashboard"
+                      icon={<ShieldCheck className="h-4 w-4" />}
+                      active={pathname.startsWith('/admin')}
+                      onClick={() => setOpen(false)}
+                    />
+                  )}
 
                   {!isAuthed ? (
                     <div className="mt-4 grid gap-2">

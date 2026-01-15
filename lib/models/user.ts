@@ -10,8 +10,8 @@ export interface User {
   email: string;
   image?: string;
 
-  ratingAvg: number      // e.g. 4.83
-  ratingCount: number
+  ratingAvg: number;     // e.g. 4.83
+  ratingCount: number;
 
   // Skills
   canTeach: string[];
@@ -19,6 +19,9 @@ export interface User {
 
   // State
   onboardingCompleted: boolean;
+
+  // 🔐 Admin
+  admin?: boolean;       // true only for admins
 
   // Meta
   createdAt: Date;

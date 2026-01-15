@@ -57,6 +57,7 @@ export async function POST(req: Request) {
       $setOnInsert: {
         email: session.user.email,
         name: session.user.name,
+        admin: false,
         createdAt: new Date(),
       },
     },
